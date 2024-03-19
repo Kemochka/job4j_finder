@@ -24,21 +24,9 @@ public class ConditionFinder {
     }
 
     private Predicate<Path> getMask(String name) {
-        int i = name.indexOf("*");
-        if ((i == -1) || i != name.lastIndexOf("*")) {
-            throw new IllegalArgumentException("Ошибка маски");
-        }
-        String left = name.substring(0, i);
-        String right = name.substring(i + 1);
-        if (i == 0) {
-            return path -> path.toFile().getName().endsWith(right);
-        }
-        if (i == name.length() - 1) {
-            return path -> path.toFile().getName().startsWith(left);
-        }
-        return path -> path.toFile().getName().startsWith(left) && path
-                .toFile()
-                .getName()
-                .endsWith(right);
+        String regex = name.replaceAll("\\.", "\\\\.")
+                .replaceAll("\\*", ".*")
+                .replace("?", ".");
+        return path -> path.toFile().getName().matches(regex);
     }
 }
